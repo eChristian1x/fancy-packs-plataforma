@@ -1,0 +1,67 @@
+.picker {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+.elegir {
+  cursor: pointer;
+}
+.elegir[aria-disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+.elegir:focus-within {
+  outline: 2px solid var(--fresa);
+  outline-offset: 2px;
+}
+.ayuda {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.error {
+  font-size: var(--t-xs);
+  color: var(--error);
+}
+.soltar {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 150px;
+  padding: 22px;
+  border: 2px dashed var(--linea-2);
+  border-radius: var(--radio-l);
+  background: var(--obsidiana-2);
+  text-align: center;
+  color: var(--texto-2);
+  cursor: pointer;
+  transition: border-color 0.15s var(--ease), background 0.15s var(--ease);
+}
+.soltar:hover,
+.soltar[data-over] {
+  border-color: var(--fresa);
+  background: var(--fresa-tinte);
+}
+.soltar:focus-within {
+  outline: 2px solid var(--fresa);
+  outline-offset: 2px;
+}
+.soltar b {
+  color: var(--nata);
+}
+.soltar small {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.barra {
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--amatista-3);
+  overflow: hidden;
+}
+.barra span {
+  display: block;
+  height: 100%;
+  background: var(--fresa);
+  transition: width 0.2s linear;
+}

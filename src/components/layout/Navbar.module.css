@@ -112,14 +112,100 @@
   flex: none;
 }
 
+.usuario {
+  position: relative;
+}
 .perfil {
   display: block;
+  padding: 0;
+  border: 0;
   border-radius: var(--radio-s);
   overflow: hidden;
+  background: none;
   box-shadow: 0 0 0 1px var(--linea-2);
+  cursor: pointer;
 }
-.perfil:hover {
+.perfil svg,
+.perfil img {
+  display: block;
+}
+.perfil:hover,
+.perfil[aria-expanded="true"] {
   box-shadow: 0 0 0 2px var(--fresa);
+}
+.desplegable {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 60;
+  width: 240px;
+  padding: 6px;
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-l);
+  background: var(--amatista);
+  box-shadow: var(--sombra-2);
+}
+.desplegable[hidden] {
+  display: none;
+}
+.quien {
+  display: grid;
+  gap: 2px;
+  padding: 10px 10px 12px;
+  border-bottom: 1px solid var(--linea);
+  margin-bottom: 4px;
+}
+.quien b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.quien span {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.desplegable a,
+.salir {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--radio-m);
+  background: none;
+  color: var(--texto-2);
+  font: inherit;
+  font-size: var(--t-s);
+  text-align: left;
+  cursor: pointer;
+}
+.desplegable a:hover,
+.salir:hover,
+.desplegable a[aria-current] {
+  background: var(--amatista-2);
+  color: var(--nata);
+}
+.desplegable form {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--linea);
+}
+.cuentaLista {
+  display: grid;
+  gap: 2px;
+}
+.cuentaLista a,
+.cuentaLista button {
+  display: block;
+  width: 100%;
+  padding: 12px 4px;
+  border: 0;
+  background: none;
+  color: var(--texto-2);
+  font: inherit;
+  text-align: left;
+}
+.cuentaLista button {
+  color: var(--fresa);
 }
 
 .menuBoton {

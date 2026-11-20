@@ -32,9 +32,25 @@ export type ModInspection = Inspection & {
 
 export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // límite de Supabase Storage (plan gratuito)
 
-export function readZip(data: Uint8Array): Unzipped {
-  return unzipSync(data, { filter: (f) => !f.name.endsWith("/") });
+/** Resoluciones que se pueden elegir al publicar (la detectada se redondea a una de estas). */
+export const RESOLUTIONS = [8, 16, 32, 64, 128, 256, 512] as const;
+export const nearestResolution = (w: number) => RESOLUTIONS.reduce((a, b) => (Math.abs(b - w) < Math.abs(a - w) ? b : a));
+
+/** Lee el .zip. Solo descomprime lo que pida `want`; los nombres de todo quedan en `names`. */
+export function readZip(data: Uint8Array, want: (name: string) => boolean = () => true): { files: Unzipped; names: string[] } {
+  const names: string[] = [];
+  const files = unzipSync(data, {
+    filter: (f) => {
+      if (f.name.endsWith("/")) return false;
+      names.push(f.name);
+      return want(f.name) && f.originalSize < 8 * 1024 * 1024;
+    },
+  });
+  return { files, names };
 }
+
+const ITEM_TEX = /^assets\/minecraft\/textures\/items?\/[^/]+\.png$/i;
+const META_FILES = new Set(["pack.mcmeta", "pack.png", "fabric.mod.json", "quilt.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml"]);
 
 const isPng = (b: Uint8Array) => b.length > 24 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47;
 const pngWidth = (b: Uint8Array) => (b[16] << 24) | (b[17] << 16) | (b[18] << 8) | b[19];
@@ -42,13 +58,14 @@ const pngWidth = (b: Uint8Array) => (b[16] << 24) | (b[17] << 16) | (b[18] << 8)
 export function inspectResourcePack(data: Uint8Array): PackInspection {
   const res: PackInspection = { ok: false, errors: [], warnings: [], meta: null, versions: [], textures: 0, hasIcon: false, resolution: null, files: [] };
   let z: Unzipped;
+  let names: string[];
   try {
-    z = readZip(data);
+    let items = 0;
+    ({ files: z, names } = readZip(data, (n) => META_FILES.has(n) || (ITEM_TEX.test(n) && items++ < 60)));
   } catch {
     res.errors.push("El archivo no es un .zip válido o está dañado.");
     return res;
   }
-  const names = Object.keys(z);
   res.files = names;
   if (names.some((n) => n === "manifest.json") && !names.includes("pack.mcmeta")) {
     res.errors.push("Es un pack de Bedrock (.mcpack). Por ahora solo se aceptan packs de Java.");
@@ -76,8 +93,8 @@ export function inspectResourcePack(data: Uint8Array): PackInspection {
   const textures = names.filter((n) => /^assets\/[^/]+\/textures\/.+\.png$/i.test(n));
   res.textures = textures.length;
   if (!textures.length && !names.some((n) => n.startsWith("assets/"))) res.warnings.push("No contiene ninguna carpeta assets/: el pack no cambia nada.");
-  const widths = textures
-    .filter((n) => /\/textures\/items?\//.test(n))
+  const widths = Object.keys(z)
+    .filter((n) => ITEM_TEX.test(n))
     .map((n) => (isPng(z[n]) ? pngWidth(z[n]) : 0))
     .filter((w) => w > 0 && w <= 4096);
   if (widths.length) {
@@ -101,7 +118,7 @@ export function inspectMod(data: Uint8Array): ModInspection {
   const res: ModInspection = { ok: false, errors: [], warnings: [], loaders: [], modId: null, name: null, version: null, mcRange: null, dependencies: [] };
   let z: Unzipped;
   try {
-    z = readZip(data);
+    ({ files: z } = readZip(data, (n) => META_FILES.has(n)));
   } catch {
     res.errors.push("El archivo no es un .jar válido o está dañado.");
     return res;

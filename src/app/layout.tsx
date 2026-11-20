@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { NavProgress } from "@/components/layout/NavProgress";
 import { SampleNotice } from "@/components/layout/SampleNotice";
+import { getSessionUser, isStaff } from "@/lib/auth/session";
 import { getSiteInfo, getStats, type SiteInfo } from "@/lib/queries/resources";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -41,10 +42,12 @@ const FALLBACK_SITE: SiteInfo = { name: "Fancy Packs", tagline: "Texturas PvP, o
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Si la base no responde, la página sigue mostrando la navegación y el error de cada sección.
-  const [site, stats] = await Promise.all([
+  const [site, stats, user] = await Promise.all([
     getSiteInfo().catch(() => FALLBACK_SITE),
     getStats().catch(() => null),
+    getSessionUser().catch(() => null),
   ]);
+  const navUser = user ? { username: user.username, displayName: user.displayName, avatarUrl: user.avatarUrl, staff: isStaff(user) } : null;
 
   return (
     <html lang="es-MX" className={archivo.variable}>
@@ -56,8 +59,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Saltar al contenido
         </a>
         {stats?.hasSamples && <SampleNotice />}
-        {/* La sesión de usuario llega en la etapa 6 (Supabase Auth). */}
-        <Navbar user={null} />
+        <Navbar user={navUser} />
         <main id="contenido">{children}</main>
         <Footer site={site} />
       </body>

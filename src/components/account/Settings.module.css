@@ -1,0 +1,46 @@
+.avatar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.avatar > svg,
+.avatar > img {
+  flex: none;
+  border-radius: var(--radio-m);
+}
+.avatarAcciones {
+  display: grid;
+  gap: 8px;
+}
+.quitar {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.quitar:hover {
+  color: var(--error);
+}
+.redes {
+  display: grid;
+  gap: 8px;
+}
+.red {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 8px;
+}
+.columna {
+  display: grid;
+  gap: 20px;
+  max-width: 760px;
+}
+@media (max-width: 640px) {
+  .red {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

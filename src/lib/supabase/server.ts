@@ -1,0 +1,21 @@
+import "server-only";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { SUPABASE_KEY, SUPABASE_URL } from "./config";
+
+/** Cliente de Supabase con la sesión del visitante (cookies). Solo para Auth: los datos van por Drizzle. */
+export async function supabaseServer() {
+  const store = await cookies();
+  return createServerClient(SUPABASE_URL, SUPABASE_KEY, {
+    cookies: {
+      getAll: () => store.getAll(),
+      setAll: (list) => {
+        try {
+          list.forEach(({ name, value, options }) => store.set(name, value, options));
+        } catch {
+          // En un Server Component no se pueden escribir cookies; el proxy ya renovó la sesión.
+        }
+      },
+    },
+  });
+}

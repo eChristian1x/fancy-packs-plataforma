@@ -1,0 +1,137 @@
+.pagina {
+  display: grid;
+  gap: 24px;
+  padding-bottom: var(--seccion);
+}
+.cabeza {
+  display: grid;
+  gap: 12px;
+}
+.cabeza h1 {
+  font-size: var(--t-hero);
+  font-stretch: 125%;
+  line-height: 1;
+}
+.cabeza > p {
+  max-width: 60ch;
+  color: var(--texto-2);
+}
+.buscar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 420px;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-m);
+  background: var(--obsidiana-2);
+  color: var(--texto-3);
+}
+.buscar:focus-within {
+  outline: 2px solid var(--fresa);
+  outline-offset: -1px;
+}
+.buscar input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--nata);
+  font: inherit;
+  outline: none;
+}
+.lista {
+  display: grid;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+}
+.creador {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+  background: var(--obsidiana-2);
+}
+.creador + .creador {
+  border-top: 1px solid var(--linea);
+}
+.creador > svg,
+.creador > img {
+  border-radius: var(--radio-m);
+}
+.texto {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-l);
+  font-weight: 800;
+}
+.nombre:hover {
+  color: var(--fresa);
+}
+.verificado {
+  color: var(--miel);
+}
+.usuario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.bio {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--t-s);
+  color: var(--texto-2);
+}
+.tipos {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.cifras {
+  display: flex;
+  gap: 22px;
+}
+.cifras div {
+  display: grid;
+  text-align: right;
+}
+.cifras dt {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.cifras dd {
+  margin: 0;
+  font-size: var(--t-l);
+  font-weight: 800;
+  color: var(--miel);
+}
+.pie {
+  font-size: var(--t-s);
+  color: var(--texto-3);
+}
+.pie a {
+  color: var(--fresa);
+  font-weight: 700;
+}
+@media (max-width: 720px) {
+  .creador {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .cifras {
+    grid-column: 2;
+  }
+  .cifras div {
+    text-align: left;
+  }
+}
