@@ -3,7 +3,7 @@ import { and, asc, desc, eq, sql, type SQL } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { getDb } from "@/lib/db/client";
 import { categories, mcVersions, profiles, resourceCategories, resources, type ResourceType } from "@/lib/db/schema";
-import { PAGE_SIZE, RES_BUCKETS, type CatalogQuery, type ResKey } from "@/lib/catalog-params";
+import { LOADERS, PAGE_SIZE, RES_BUCKETS, type CatalogQuery, type ResKey } from "@/lib/catalog-params";
 import { versionSortKey } from "@/lib/versions";
 import { CACHE_TAG, selectCards, type ResourceCard } from "./resources";
 
@@ -50,7 +50,7 @@ const RES_BUCKET_SQL = sql<string>`case
   when ${resources.resolution} >= 128 then '128'
   else ${resources.resolution}::text end`;
 
-type Facet = "categorias" | "versiones" | "res";
+type Facet = "categorias" | "versiones" | "res" | "loaders";
 
 /** Condiciones de la consulta. `except` deja fuera un filtro para contar sus opciones. */
 function conditions(type: ResourceType, q: CatalogQuery, except?: Facet): SQL {
@@ -68,8 +68,11 @@ function conditions(type: ResourceType, q: CatalogQuery, except?: Facet): SQL {
   if (except !== "versiones" && q.versiones.length) {
     c.push(sql`${resources.mcVersions} && array[${sql.join(q.versiones.map((v) => sql`${v}`), sql`, `)}]::text[]`);
   }
-  if (except !== "res" && q.res.length) {
+  if (type !== "mod" && except !== "res" && q.res.length) {
     c.push(sql`(${sql.join(q.res.map((k) => RES_SQL[k]), sql` or `)})`);
+  }
+  if (type === "mod" && except !== "loaders" && q.loaders.length) {
+    c.push(sql`${resources.loaders} && array[${sql.join(q.loaders.map((l) => sql`${l}`), sql`, `)}]::mod_loader[]`);
   }
   return and(...c)!;
 }
@@ -107,7 +110,7 @@ export type CatalogResult = {
   pageSize: number;
   /** Total del tipo sin filtros (para "4 de 16 texturas") */
   totalAll: number;
-  facets: { categorias: FacetOption[]; versiones: FacetOption[]; res: FacetOption[] };
+  facets: { categorias: FacetOption[]; versiones: FacetOption[]; res: FacetOption[]; loaders: FacetOption[] };
   /** Descripción de la categoría si hay exactamente una seleccionada */
   category: { slug: string; name: string; description: string | null } | null;
 };
@@ -117,7 +120,8 @@ async function run(type: ResourceType, q: CatalogQuery): Promise<CatalogResult> 
   const where = conditions(type, q);
   const count = async (w: SQL) => (await db.select({ n: sql<number>`count(*)::int` }).from(resources).where(w))[0].n;
 
-  const [total, totalAll, catRows, verRows, resRows, versions] = await Promise.all([
+  const isMod = type === "mod";
+  const [total, totalAll, catRows, verRows, resRows, versions, loaderRows] = await Promise.all([
     count(where),
     count(and(eq(resources.status, "published"), eq(resources.type, type))!),
     db
@@ -133,12 +137,21 @@ async function run(type: ResourceType, q: CatalogQuery): Promise<CatalogResult> 
       .from(sql`${resources}, unnest(${resources.mcVersions}) as v`)
       .where(conditions(type, q, "versiones"))
       .groupBy(sql`v`),
-    db
-      .select({ b: RES_BUCKET_SQL, n: sql<number>`count(*)::int` })
-      .from(resources)
-      .where(and(conditions(type, q, "res"), sql`${resources.resolution} is not null`))
-      .groupBy(RES_BUCKET_SQL),
+    isMod
+      ? Promise.resolve([] as { b: string; n: number }[])
+      : db
+          .select({ b: RES_BUCKET_SQL, n: sql<number>`count(*)::int` })
+          .from(resources)
+          .where(and(conditions(type, q, "res"), sql`${resources.resolution} is not null`))
+          .groupBy(RES_BUCKET_SQL),
     db.select({ id: mcVersions.id }).from(mcVersions),
+    isMod
+      ? db
+          .select({ l: sql<string>`l::text`, n: sql<number>`count(*)::int` })
+          .from(sql`${resources}, unnest(${resources.loaders}) as l`)
+          .where(conditions(type, q, "loaders"))
+          .groupBy(sql`l`)
+      : Promise.resolve([] as { l: string; n: number }[]),
   ]);
 
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -163,7 +176,8 @@ async function run(type: ResourceType, q: CatalogQuery): Promise<CatalogResult> 
     facets: {
       categorias: catRows.map((c) => ({ value: c.slug, label: c.name, icon: c.icon, count: c.n })),
       versiones: allVersions.map((v) => ({ value: v, label: v, count: verCount.get(v) ?? 0 })),
-      res: RES_BUCKETS.map((b) => ({ value: b.key, label: b.label, count: resCount.get(b.key) ?? 0 })),
+      res: isMod ? [] : RES_BUCKETS.map((b) => ({ value: b.key, label: b.label, count: resCount.get(b.key) ?? 0 })),
+      loaders: isMod ? LOADERS.map((l) => ({ value: l.key, label: l.label, count: loaderRows.find((r) => r.l === l.key)?.n ?? 0 })) : [],
     },
     category: selectedCat ? { slug: selectedCat.slug, name: selectedCat.name, description: selectedCat.description } : null,
   };
@@ -181,7 +195,7 @@ export type SearchResult = {
   creators: CreatorHit[];
 };
 
-const EMPTY_QUERY = (q: string): CatalogQuery => ({ q, creador: "", categorias: [], versiones: [], res: [], orden: "relevancia", pagina: 1 });
+const EMPTY_QUERY = (q: string): CatalogQuery => ({ q, creador: "", categorias: [], versiones: [], res: [], loaders: [], orden: "relevancia", pagina: 1 });
 
 async function search(q: string): Promise<SearchResult> {
   const db = await getDb();

@@ -49,3 +49,20 @@
     gap: 12px;
   }
 }
+
+.gridMods {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.gridMods > li {
+  display: flex;
+}
+.gridMods > li > * {
+  flex: 1;
+}
+@media (max-width: 1180px) {
+  .gridMods {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

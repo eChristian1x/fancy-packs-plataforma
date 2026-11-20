@@ -10,6 +10,7 @@ import {
   SORTS,
   toggle,
   type CatalogQuery,
+  type LoaderKey,
   type ResKey,
   type Sort,
 } from "@/lib/catalog-params";
@@ -19,7 +20,7 @@ import styles from "./CatalogShell.module.css";
 type Props = {
   base: string;
   query: CatalogQuery;
-  facets: { categorias: FacetOption[]; versiones: FacetOption[]; res: FacetOption[] };
+  facets: { categorias: FacetOption[]; versiones: FacetOption[]; res: FacetOption[]; loaders: FacetOption[] };
   total: number;
   totalAll: number;
   unit: { one: string; many: string };
@@ -61,7 +62,7 @@ export function CatalogShell({ base, query, facets, total, totalAll, unit, searc
 
   const nFilters = activeFilterCount(query);
   // El botón de la hoja cuenta solo los filtros que están dentro de la hoja (no las categorías).
-  const nSheet = query.res.length + query.versiones.length + (query.creador ? 1 : 0);
+  const nSheet = query.res.length + query.loaders.length + query.versiones.length + (query.creador ? 1 : 0);
   const word = total === 1 ? unit.one : unit.many;
   const countText = total === totalAll && !query.q && !nFilters ? `${total} ${word}` : `${total} de ${totalAll} ${unit.many}`;
 
@@ -72,10 +73,11 @@ export function CatalogShell({ base, query, facets, total, totalAll, unit, searc
     ...(query.q ? [{ key: "q", label: `“${query.q}”`, change: { q: "" } }] : []),
     ...query.categorias.map((c) => ({ key: `c-${c}`, label: catName(c), change: { categorias: query.categorias.filter((x) => x !== c) } })),
     ...query.res.map((r) => ({ key: `r-${r}`, label: resName(r), change: { res: query.res.filter((x) => x !== r) } })),
+    ...query.loaders.map((l) => ({ key: `l-${l}`, label: facets.loaders.find((o) => o.value === l)?.label ?? l, change: { loaders: query.loaders.filter((x) => x !== l) } })),
     ...query.versiones.map((v) => ({ key: `v-${v}`, label: `Minecraft ${v}`, change: { versiones: query.versiones.filter((x) => x !== v) } })),
     ...(query.creador ? [{ key: "cr", label: `Creador: ${query.creador}`, change: { creador: "" } }] : []),
   ];
-  const clearAll: Partial<CatalogQuery> = { q: "", categorias: [], versiones: [], res: [], creador: "" };
+  const clearAll: Partial<CatalogQuery> = { q: "", categorias: [], versiones: [], res: [], loaders: [], creador: "" };
 
   return (
     <div className={styles.shell}>
@@ -230,6 +232,7 @@ function HiddenFilters({ query, omit }: { query: CatalogQuery; omit: (keyof Cata
   if (!omit.includes("categorias") && query.categorias.length) f.push(["categoria", query.categorias.join(",")]);
   if (!omit.includes("versiones") && query.versiones.length) f.push(["version", query.versiones.join(",")]);
   if (!omit.includes("res") && query.res.length) f.push(["res", query.res.join(",")]);
+  if (!omit.includes("loaders") && query.loaders.length) f.push(["loader", query.loaders.join(",")]);
   if (!omit.includes("creador") && query.creador) f.push(["creador", query.creador]);
   if (!omit.includes("orden")) f.push(["orden", query.orden]);
   return (
@@ -274,7 +277,7 @@ function Filters({
 
   return (
     <form action={base} className={styles.filtros} onSubmit={(e) => e.preventDefault()}>
-      <HiddenFilters query={query} omit={["res", "versiones", "creador"]} />
+      <HiddenFilters query={query} omit={["res", "loaders", "versiones", "creador"]} />
 
       <div className={styles.grupo}>
         <label htmlFor={`${id}-creador`} className={styles.titulo}>
@@ -295,20 +298,39 @@ function Filters({
         </div>
       </div>
 
-      <fieldset className={styles.grupo}>
-        <legend className={styles.titulo}>Resolución</legend>
-        <ul className={styles.opciones}>
-          {facets.res.map((o) => (
-            <Check
-              key={o.value}
-              name="res"
-              option={o}
-              checked={query.res.includes(o.value as ResKey)}
-              onChange={() => go({ res: toggle(query.res, o.value as ResKey) })}
-            />
-          ))}
-        </ul>
-      </fieldset>
+      {facets.loaders.length > 0 && (
+        <fieldset className={styles.grupo}>
+          <legend className={styles.titulo}>Loader</legend>
+          <ul className={styles.opciones}>
+            {facets.loaders.map((o) => (
+              <Check
+                key={o.value}
+                name="loader"
+                option={o}
+                checked={query.loaders.includes(o.value as LoaderKey)}
+                onChange={() => go({ loaders: toggle(query.loaders, o.value as LoaderKey) })}
+              />
+            ))}
+          </ul>
+        </fieldset>
+      )}
+
+      {facets.res.length > 0 && (
+        <fieldset className={styles.grupo}>
+          <legend className={styles.titulo}>Resolución</legend>
+          <ul className={styles.opciones}>
+            {facets.res.map((o) => (
+              <Check
+                key={o.value}
+                name="res"
+                option={o}
+                checked={query.res.includes(o.value as ResKey)}
+                onChange={() => go({ res: toggle(query.res, o.value as ResKey) })}
+              />
+            ))}
+          </ul>
+        </fieldset>
+      )}
 
       <fieldset className={styles.grupo}>
         <legend className={styles.titulo}>Versión de Minecraft</legend>
@@ -347,7 +369,7 @@ function Filters({
       </noscript>
 
       {n > 0 && (
-        <a {...link({ categorias: [], versiones: [], res: [], creador: "" })} className={styles.limpiar}>
+        <a {...link({ categorias: [], versiones: [], res: [], loaders: [], creador: "" })} className={styles.limpiar}>
           Quitar filtros ({n})
         </a>
       )}

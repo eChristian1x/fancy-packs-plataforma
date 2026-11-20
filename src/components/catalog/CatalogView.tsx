@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ModCard } from "@/components/cards/ModCard";
 import { TextureCard } from "@/components/cards/TextureCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { activeFilterCount, catalogHref, parseCatalogQuery, type CatalogQuery, type CatalogType } from "@/lib/catalog-params";
@@ -30,6 +31,15 @@ export const CATALOG = {
     none: "Todavía no hay overlays publicados.",
     meta: (cat?: string) => (cat ? `Overlays de ${cat.toLowerCase()} para Minecraft` : "Overlays para Minecraft PvP"),
   },
+  mod: {
+    base: "/mods",
+    title: "Mods",
+    unit: { one: "mod", many: "mods" },
+    description: "Mods de cliente para PvP, rendimiento y utilidad. Filtra por loader y versión para instalarlos sin errores.",
+    placeholder: "Buscar mods por nombre o creador",
+    none: "Todavía no hay mods publicados.",
+    meta: (cat?: string) => (cat ? `Mods de ${cat} para Minecraft` : "Mods para Minecraft: Fabric, Forge, NeoForge y Quilt"),
+  },
 } as const;
 
 /** Metadatos: título por categoría y solo las vistas "limpias" se indexan. */
@@ -38,8 +48,8 @@ export async function catalogMetadata(type: CatalogType, searchParams: SP): Prom
   const query = parseCatalogQuery(await searchParams);
   const cats = (await getCategoryCounts().catch(() => [])).filter((c) => c.type === type);
   const cat = query.categorias.length === 1 ? cats.find((c) => c.slug === query.categorias[0]) : undefined;
-  const clean = !query.q && !query.creador && !query.versiones.length && !query.res.length && query.categorias.length <= 1;
-  const canonical = catalogHref(cfg.base, { ...query, q: "", creador: "", versiones: [], res: [], orden: "populares", categorias: cat ? [cat.slug] : [] }, { pagina: query.pagina });
+  const clean = !query.q && !query.creador && !query.versiones.length && !query.res.length && !query.loaders.length && query.categorias.length <= 1;
+  const canonical = catalogHref(cfg.base, { ...query, q: "", creador: "", versiones: [], res: [], loaders: [], orden: "populares", categorias: cat ? [cat.slug] : [] }, { pagina: query.pagina });
   return {
     title: cfg.meta(cat?.name),
     description: cat?.description ?? cfg.description,
@@ -120,11 +130,9 @@ function Results({ type, query, result }: { type: CatalogType; query: CatalogQue
   return (
     <>
       <h2 className="solo-lectores">Resultados, página {result.page} de {result.pages}</h2>
-      <ul className={styles.grid}>
+      <ul className={type === "mod" ? styles.gridMods : styles.grid}>
         {result.items.map((r, i) => (
-          <li key={r.id}>
-            <TextureCard r={r} variant="catalogo" priority={i < 3 && result.page === 1} />
-          </li>
+          <li key={r.id}>{type === "mod" ? <ModCard r={r} /> : <TextureCard r={r} variant="catalogo" priority={i < 3 && result.page === 1} />}</li>
         ))}
       </ul>
       <Pagination base={cfg.base} query={query} page={result.page} pages={result.pages} />

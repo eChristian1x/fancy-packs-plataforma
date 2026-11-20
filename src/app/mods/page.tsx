@@ -1,19 +1,11 @@
-import type { Metadata } from "next";
-import { StagePlaceholder } from "@/components/ui/StagePlaceholder";
+import { CatalogView, catalogMetadata } from "@/components/catalog/CatalogView";
 
-export const metadata: Metadata = { title: "Mods", robots: { index: false } };
+type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
-export default function Page() {
-  return (
-    <StagePlaceholder
-      stage={5}
-      title="Catálogo de mods"
-      description="Una sección aparte para mods, con lo que hace falta para instalarlos sin errores."
-      items={[
-        "Filtros por loader: Fabric, Forge, NeoForge y Quilt",
-        "Filtros por versión de Minecraft y categoría",
-        "Historial de versiones, archivos y dependencias en cada mod",
-      ]}
-    />
-  );
+export function generateMetadata({ searchParams }: Props) {
+  return catalogMetadata("mod", searchParams);
+}
+
+export default function Page({ searchParams }: Props) {
+  return <CatalogView type="mod" searchParams={searchParams} />;
 }

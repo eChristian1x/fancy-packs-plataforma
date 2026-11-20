@@ -7,7 +7,7 @@
  * Este archivo lo usan el servidor y el navegador: no toca la base de datos.
  */
 
-export const CATALOG_TYPES = ["texture", "overlay"] as const;
+export const CATALOG_TYPES = ["texture", "overlay", "mod"] as const;
 export type CatalogType = (typeof CATALOG_TYPES)[number];
 
 export const SORTS = {
@@ -28,6 +28,14 @@ export const RES_BUCKETS = [
 ] as const;
 export type ResKey = (typeof RES_BUCKETS)[number]["key"];
 
+export const LOADERS = [
+  { key: "fabric", label: "Fabric" },
+  { key: "forge", label: "Forge" },
+  { key: "neoforge", label: "NeoForge" },
+  { key: "quilt", label: "Quilt" },
+] as const;
+export type LoaderKey = (typeof LOADERS)[number]["key"];
+
 export const PAGE_SIZE = 24;
 const MAX_Q = 80;
 
@@ -37,6 +45,7 @@ export type CatalogQuery = {
   categorias: string[];
   versiones: string[];
   res: ResKey[];
+  loaders: LoaderKey[];
   orden: Sort;
   pagina: number;
 };
@@ -61,6 +70,7 @@ export function parseCatalogQuery(sp: RawParams): CatalogQuery {
     categorias: list(sp.categoria).filter((s) => /^[a-z0-9-]{1,48}$/.test(s)),
     versiones: list(sp.version).filter((s) => /^[0-9][0-9a-z.+-]{0,23}$/i.test(s)),
     res: list(sp.res).filter((s): s is ResKey => resKeys.includes(s)),
+    loaders: list(sp.loader).filter((s): s is LoaderKey => LOADERS.some((l) => l.key === s)),
     orden,
     pagina,
   };
@@ -75,6 +85,7 @@ export function catalogHref(base: string, query: CatalogQuery, change: Partial<C
   if (next.categorias.length) p.set("categoria", next.categorias.join(","));
   if (next.versiones.length) p.set("version", next.versiones.join(","));
   if (next.res.length) p.set("res", next.res.join(","));
+  if (next.loaders.length) p.set("loader", next.loaders.join(","));
   if (next.creador) p.set("creador", next.creador);
   const defaultSort = next.q ? "relevancia" : "populares";
   if (next.orden !== defaultSort && (next.orden !== "relevancia" || next.q)) p.set("orden", next.orden);
@@ -88,5 +99,5 @@ export function toggle<T>(arr: T[], v: T) {
 }
 
 export function activeFilterCount(q: CatalogQuery) {
-  return q.categorias.length + q.versiones.length + q.res.length + (q.creador ? 1 : 0);
+  return q.categorias.length + q.versiones.length + q.res.length + q.loaders.length + (q.creador ? 1 : 0);
 }
