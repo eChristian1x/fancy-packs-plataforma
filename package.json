@@ -1,0 +1,37 @@
+{
+  "name": "fancy-packs-plataforma",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run db:setup && next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:setup": "tsx scripts/db-setup.ts",
+    "db:seed": "tsx scripts/db-setup.ts --seed",
+    "db:clear-samples": "tsx scripts/clear-samples.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.17",
+    "drizzle-orm": "^0.45.4",
+    "next": "^16.4.6",
+    "postgres": "^4.1.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "axe-core": "^4.14.1",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20.12"
+  }
+}

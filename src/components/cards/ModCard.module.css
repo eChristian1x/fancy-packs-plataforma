@@ -1,0 +1,89 @@
+.mod {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+.mod:hover {
+  border-color: rgb(255 111 177 / 0.55);
+  background: var(--amatista-2);
+}
+.mod:focus-within {
+  border-color: var(--fresa);
+}
+
+.icono {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radio-m);
+  overflow: hidden;
+  background: var(--amatista-3);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+.icono img {
+  image-rendering: pixelated;
+}
+
+.cuerpo {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  align-content: start;
+}
+
+.cabeza {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.cabeza h3 {
+  font-size: var(--t-m);
+  font-stretch: 110%;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.enlace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.enlace:focus-visible {
+  outline: none;
+}
+.mod:hover .enlace {
+  color: var(--fresa-claro);
+}
+
+.cuerpo > :global(p:first-of-type) {
+  margin-top: -6px;
+}
+
+.resumen {
+  font-size: var(--t-s);
+  color: var(--texto-2);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--t-xs);
+  padding-top: 4px;
+}

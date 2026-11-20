@@ -1,0 +1,140 @@
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.principal {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+  transition: border-color 0.2s var(--ease);
+}
+.principal:hover,
+.secundario:hover {
+  border-color: rgb(255 111 177 / 0.55);
+}
+.principal:focus-within,
+.secundario:focus-within {
+  border-color: var(--fresa);
+}
+
+.imgGrande {
+  position: relative;
+  aspect-ratio: 16 / 8;
+  background: var(--obsidiana-2);
+}
+.imgGrande img,
+.imgChica img {
+  object-fit: cover;
+}
+.imgGrande[data-icono] img,
+.imgChica[data-icono] img {
+  object-fit: contain;
+  image-rendering: pixelated;
+  padding: 12%;
+}
+
+.ejemplo {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.texto {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 20px 22px 18px;
+}
+.texto h3 {
+  font-size: var(--t-xl);
+  font-weight: 800;
+  font-stretch: 122%;
+  letter-spacing: -0.015em;
+}
+.resumen {
+  max-width: 58ch;
+  color: var(--texto-2);
+  font-size: var(--t-s);
+}
+
+.tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--fresa-claro);
+}
+
+.enlace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.enlace:focus-visible {
+  outline: none;
+}
+.principal:hover .enlace,
+.secundario:hover .enlace {
+  color: var(--fresa-claro);
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: var(--t-xs);
+  padding-top: 4px;
+}
+
+.lista {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.secundario {
+  position: relative;
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+  transition: border-color 0.2s var(--ease);
+}
+.imgChica {
+  position: relative;
+  min-height: 112px;
+  background: var(--obsidiana-2);
+}
+.textoChico {
+  display: grid;
+  gap: 6px;
+  align-content: center;
+  padding: 14px 16px;
+  min-width: 0;
+}
+.textoChico h3 {
+  font-size: var(--t-m);
+  font-weight: 750;
+  font-stretch: 112%;
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .secundario {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+}

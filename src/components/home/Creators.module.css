@@ -1,0 +1,62 @@
+.lista {
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+}
+.lista li + li {
+  border-top: 1px solid var(--linea);
+}
+
+.creador {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  transition: background-color 0.15s var(--ease);
+}
+.creador:hover,
+.creador:focus-visible {
+  background: var(--amatista-2);
+}
+.creador:focus-visible {
+  outline-offset: -2px;
+}
+
+.avatar {
+  border-radius: var(--radio-s);
+  box-shadow: 0 0 0 1px var(--linea-2);
+}
+.creador:hover .avatar {
+  box-shadow: 0 0 0 2px var(--fresa);
+}
+
+.nombre {
+  display: grid;
+  min-width: 0;
+}
+.nombre b {
+  font-weight: 700;
+  font-stretch: 110%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nombre span {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+
+.descargas {
+  display: grid;
+  justify-items: end;
+  font-weight: 800;
+  color: var(--miel);
+  line-height: 1.2;
+}
+.descargas span {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--texto-3);
+}

@@ -1,0 +1,75 @@
+.descargas {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  color: var(--miel);
+  white-space: nowrap;
+}
+
+.versiones {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--texto-2);
+  white-space: nowrap;
+}
+.versiones svg,
+.descargas svg {
+  flex: none;
+}
+.versiones svg {
+  color: var(--texto-3);
+}
+
+.autor {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.autor a {
+  color: var(--texto-2);
+  font-weight: 600;
+}
+.autor a:hover {
+  color: var(--fresa);
+}
+
+/* Enlaces secundarios por encima del enlace que cubre toda la tarjeta */
+.encima {
+  position: relative;
+  z-index: 2;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.loaders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.loaders li {
+  color: var(--c);
+}
+.loaders li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--c);
+}
+
+.ejemplo {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--texto-2);
+  background: rgb(21 16 26 / 0.82);
+  border-radius: var(--radio-s);
+  box-shadow: inset 0 0 0 1px rgb(255 212 71 / 0.35);
+}

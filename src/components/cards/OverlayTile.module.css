@@ -1,0 +1,68 @@
+.tile {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.img {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radio-m);
+  overflow: hidden;
+  background: var(--amatista);
+  box-shadow: inset 0 0 0 1px var(--linea);
+  margin-bottom: 4px;
+}
+.img img {
+  object-fit: cover;
+  transition: transform 0.45s var(--ease);
+}
+.tile:hover .img img {
+  transform: scale(1.05);
+}
+.tile:focus-within .img {
+  box-shadow: 0 0 0 2px var(--fresa);
+}
+
+.ejemplo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.tile h3 {
+  font-size: var(--t-m);
+  font-stretch: 108%;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.enlace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.enlace:focus-visible {
+  outline: none;
+}
+.tile:hover .enlace {
+  color: var(--fresa-claro);
+}
+
+.resumen {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--t-xs);
+}

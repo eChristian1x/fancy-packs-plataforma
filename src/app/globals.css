@@ -1,0 +1,313 @@
+/*
+ * Fancy Packs — sistema visual
+ *
+ * Paleta (del brief): rosa de marca, blanco para texto, amarillo para indicadores, fondos oscuros.
+ * Los oscuros tienen un poco de morado para que el rosa se sienta en casa.
+ *
+ *   Obsidiana  #15101A  fondo
+ *   Amatista   #201726  superficies (tarjetas, paneles)
+ *   Fresa      #FF6FB1  acción y marca (botones, selección, enlaces activos)
+ *   Nata       #FFF6FA  texto
+ *   Miel       #FFD447  cifras, destacados, avisos
+ *
+ * Tipografía: una sola familia (Archivo). Títulos en ancho expandido (125%) y peso alto,
+ * como las letras gruesas del logo; texto en ancho normal.
+ */
+
+:root {
+  --obsidiana: #15101a;
+  --obsidiana-2: #1a1420;
+  --amatista: #201726;
+  --amatista-2: #2a2031;
+  --amatista-3: #33283c;
+  --linea: #362a3f;
+  --linea-2: #4b3b57;
+
+  --fresa: #ff6fb1;
+  --fresa-claro: #ff8fc3;
+  --fresa-oscuro: #e2559a;
+  --fresa-tinte: rgb(255 111 177 / 0.12);
+
+  --nata: #fff6fa;
+  --texto-2: #d2c6d6;
+  --texto-3: #a497ab;
+
+  --miel: #ffd447;
+  --miel-tinte: rgb(255 212 71 / 0.12);
+  --error: #ff7a7a;
+
+  --radio-s: 4px;
+  --radio-m: 8px;
+  --radio-l: 12px;
+
+  --sombra-1: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 1px 2px rgb(0 0 0 / 0.4);
+  --sombra-2: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 18px 40px -18px rgb(0 0 0 / 0.75);
+
+  /* escala tipográfica (aprox. 1.25) */
+  --t-xs: 0.8125rem; /* 13 */
+  --t-s: 0.875rem; /* 14 */
+  --t-m: 1rem; /* 16 */
+  --t-l: 1.125rem; /* 18 */
+  --t-xl: 1.375rem; /* 22 */
+  --t-2xl: 1.75rem; /* 28 */
+  --t-3xl: 2.5rem; /* 40 */
+  --t-hero: clamp(2.4rem, 1.4rem + 3.6vw, 4.1rem);
+
+  --ancho: 1240px;
+  --margen: clamp(16px, 4vw, 32px);
+  --seccion: clamp(56px, 7vw, 88px);
+  --nav-h: 64px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--obsidiana);
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-stretch: 100%;
+  font-size: var(--t-m);
+  line-height: 1.55;
+  color: var(--nata);
+  background: var(--obsidiana);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "tnum" 0;
+}
+
+main {
+  flex: 1;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-stretch: 125%;
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fresa);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--fresa);
+  color: var(--obsidiana);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: calc(var(--ancho) + var(--margen) * 2);
+  margin-inline: auto;
+  padding-inline: var(--margen);
+}
+
+.solo-lectores {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.saltar {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 100;
+  padding: 10px 14px;
+  background: var(--fresa);
+  color: var(--obsidiana);
+  font-weight: 700;
+  border-radius: var(--radio-m);
+  transition: top 0.15s var(--ease);
+}
+.saltar:focus {
+  top: 12px;
+}
+
+/* ---------- botones ----------
+ * Esquinas escalonadas de 3px: un guiño al pixel sin convertir todo en pixel art.
+ * El foco se dibuja por dentro (box-shadow) porque clip-path recorta el outline.
+ */
+.boton {
+  --paso: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  font-weight: 700;
+  font-size: var(--t-s);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  clip-path: polygon(
+    0 var(--paso), var(--paso) var(--paso), var(--paso) 0,
+    calc(100% - var(--paso)) 0, calc(100% - var(--paso)) var(--paso), 100% var(--paso),
+    100% calc(100% - var(--paso)), calc(100% - var(--paso)) calc(100% - var(--paso)), calc(100% - var(--paso)) 100%,
+    var(--paso) 100%, var(--paso) calc(100% - var(--paso)), 0 calc(100% - var(--paso))
+  );
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.boton:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--nata), inset 0 0 0 4px var(--obsidiana);
+}
+.boton:active {
+  transform: translateY(1px);
+}
+.boton svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.boton-principal {
+  background: var(--fresa);
+  color: var(--obsidiana);
+}
+.boton-principal:hover {
+  background: var(--fresa-claro);
+}
+
+.boton-secundario {
+  background: var(--amatista-2);
+  color: var(--nata);
+  box-shadow: inset 0 0 0 1px var(--linea-2);
+}
+.boton-secundario:hover {
+  background: var(--amatista-3);
+  box-shadow: inset 0 0 0 1px var(--fresa);
+}
+
+.boton-chico {
+  height: 36px;
+  padding: 0 14px;
+}
+
+/* ---------- etiquetas ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: var(--radio-s);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--texto-2);
+  background: var(--amatista-2);
+  box-shadow: inset 0 0 0 1px var(--linea);
+}
+a.chip:hover {
+  color: var(--nata);
+  box-shadow: inset 0 0 0 1px var(--fresa);
+}
+
+.chip-miel {
+  color: var(--miel);
+  background: var(--miel-tinte);
+  box-shadow: inset 0 0 0 1px rgb(255 212 71 / 0.35);
+}
+
+.chip-fresa {
+  color: var(--fresa-claro);
+  background: var(--fresa-tinte);
+  box-shadow: inset 0 0 0 1px rgb(255 111 177 / 0.35);
+}
+
+/* Sobre una imagen: fondo sólido para que se lea en portadas claras u oscuras */
+.chip-sobre {
+  background: rgb(21 16 26 / 0.9);
+}
+
+/* Resolución: cifra sobre fondo sólido, se lee encima de cualquier portada */
+.chip-res {
+  height: 22px;
+  padding: 0 7px;
+  font-weight: 800;
+  font-stretch: 112%;
+  color: var(--obsidiana);
+  background: var(--nata);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,21 @@
+.ruta ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.ruta li + li::before {
+  content: "/";
+  margin-right: 6px;
+  color: var(--linea-2);
+}
+.ruta a {
+  color: var(--texto-2);
+}
+.ruta a:hover {
+  color: var(--fresa);
+}
+.ruta [aria-current] {
+  color: var(--texto-3);
+}

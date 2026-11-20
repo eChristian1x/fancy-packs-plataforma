@@ -1,0 +1,150 @@
+.tabla {
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+}
+
+.cabecera,
+.fila {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 48px 128px 92px 84px;
+  align-items: center;
+  gap: 16px;
+  padding-inline: 14px 18px;
+}
+
+.cabecera {
+  height: 38px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-3);
+  border-bottom: 1px solid var(--linea);
+  background: var(--obsidiana-2);
+}
+
+.fila {
+  position: relative;
+  padding-block: 10px;
+  font-size: var(--t-xs);
+  transition: background-color 0.15s var(--ease);
+}
+.fila + .fila {
+  border-top: 1px solid var(--linea);
+}
+.fila:hover {
+  background: var(--amatista-2);
+}
+.fila:focus-within {
+  background: var(--amatista-2);
+  box-shadow: inset 3px 0 0 var(--fresa);
+}
+
+.mini {
+  position: relative;
+  width: 88px;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radio-s);
+  overflow: hidden;
+  background: var(--obsidiana-2);
+}
+.mini img {
+  object-fit: cover;
+}
+
+.principal {
+  min-width: 0;
+}
+.principal h3 {
+  font-size: var(--t-m);
+  font-stretch: 108%;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.principal p {
+  margin-top: 2px;
+  color: var(--texto-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.principal p a {
+  color: var(--texto-2);
+  font-weight: 600;
+}
+.principal p a:hover {
+  color: var(--fresa);
+}
+.cats::before {
+  content: "en ";
+  margin-left: 0.35em;
+}
+
+.enlace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.enlace:focus-visible {
+  outline: none;
+}
+.fila:hover .enlace {
+  color: var(--fresa-claro);
+}
+
+.encima {
+  position: relative;
+  z-index: 2;
+}
+
+.res {
+  font-weight: 800;
+  font-stretch: 112%;
+  color: var(--nata);
+}
+
+.fecha {
+  color: var(--texto-2);
+  white-space: nowrap;
+}
+
+.der {
+  justify-self: end;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .cabecera {
+    display: none;
+  }
+  .fila {
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "mini main dl"
+      "mini meta meta";
+    row-gap: 4px;
+    column-gap: 12px;
+    padding-inline: 12px;
+  }
+  .mini {
+    grid-area: mini;
+    width: 76px;
+  }
+  .principal {
+    grid-area: main;
+  }
+  .der {
+    grid-area: dl;
+  }
+  .res,
+  .fecha {
+    display: none;
+  }
+  .ver {
+    grid-area: meta;
+  }
+}

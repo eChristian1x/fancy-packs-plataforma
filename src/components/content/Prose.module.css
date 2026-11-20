@@ -1,0 +1,106 @@
+.pagina {
+  padding-top: clamp(40px, 7vw, 80px);
+}
+.cabeza {
+  max-width: 62ch;
+  margin-bottom: 36px;
+}
+.cabeza h1 {
+  font-size: var(--t-3xl);
+  font-stretch: 125%;
+}
+.cabeza p {
+  margin-top: 14px;
+  font-size: var(--t-l);
+  color: var(--texto-2);
+}
+
+.bloques {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.bloque {
+  padding: 22px 24px;
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+}
+.bloque h2 {
+  font-size: var(--t-l);
+  font-stretch: 118%;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.bloque p,
+.bloque li {
+  font-size: var(--t-s);
+  color: var(--texto-2);
+}
+.bloque ol {
+  display: grid;
+  gap: 12px;
+  counter-reset: paso;
+}
+.bloque ol li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  counter-increment: paso;
+}
+/* Los pasos sí son una secuencia: se numeran */
+.bloque ol li::before {
+  content: counter(paso);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--obsidiana);
+  background: var(--fresa);
+}
+.bloque ul {
+  display: grid;
+  gap: 10px;
+}
+.bloque ul li {
+  display: flex;
+  gap: 12px;
+}
+.bloque ul li::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-top: 0.6em;
+  background: var(--fresa);
+}
+.bloque b {
+  color: var(--nata);
+}
+.bloque code {
+  padding: 1px 5px;
+  font-size: 0.92em;
+  color: var(--nata);
+  background: var(--amatista-3);
+  border-radius: 3px;
+}
+
+.estado {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto-2);
+  background: var(--amatista-3);
+  border-radius: var(--radio-s);
+}
+.prioridad {
+  border-color: rgb(255 111 177 / 0.45);
+}
+.prioridad .estado {
+  color: var(--fresa-claro);
+  background: var(--fresa-tinte);
+}

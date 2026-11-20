@@ -1,0 +1,230 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  /* Sin backdrop-filter: haría que el menú móvil (position: fixed) quede atrapado dentro de la barra */
+  background: var(--obsidiana);
+  border-bottom: 1px solid var(--linea);
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: var(--nav-h);
+}
+
+.logo {
+  flex: none;
+  display: block;
+  margin-block: -4px;
+  transition: transform 0.2s var(--ease);
+}
+.logo img {
+  height: 46px;
+  width: auto;
+}
+.logo:hover {
+  transform: rotate(-3deg) scale(1.04);
+}
+
+.enlaces ul {
+  display: flex;
+  gap: 2px;
+}
+.enlaces a {
+  position: relative;
+  display: block;
+  padding: 8px 11px;
+  font-size: var(--t-s);
+  font-weight: 600;
+  color: var(--texto-2);
+  border-radius: var(--radio-s);
+  transition: color 0.15s var(--ease), background-color 0.15s var(--ease);
+}
+.enlaces a:hover {
+  color: var(--nata);
+  background: var(--amatista);
+}
+.enlaces a[aria-current="page"] {
+  color: var(--nata);
+}
+/* Indicador de página actual: barra de 3px pegada al borde inferior de la barra */
+.enlaces a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  bottom: calc((var(--nav-h) - 37px) / -2);
+  height: 3px;
+  background: var(--fresa);
+}
+
+.buscar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 320px;
+  margin-left: auto;
+  height: 40px;
+  padding: 0 10px 0 12px;
+  gap: 8px;
+  color: var(--texto-3);
+  background: var(--obsidiana-2);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-m);
+  transition: border-color 0.15s var(--ease), background-color 0.15s var(--ease);
+}
+.buscar:focus-within {
+  border-color: var(--fresa);
+  background: var(--amatista);
+  color: var(--nata);
+}
+.buscar input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  font-size: var(--t-s);
+}
+.buscar input::placeholder {
+  color: var(--texto-3);
+}
+.buscar kbd {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font: 600 12px/1 var(--font-archivo), sans-serif;
+  color: var(--texto-3);
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-s);
+}
+.buscar:focus-within kbd {
+  visibility: hidden;
+}
+
+.cuenta {
+  flex: none;
+}
+
+.perfil {
+  display: block;
+  border-radius: var(--radio-s);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--linea-2);
+}
+.perfil:hover {
+  box-shadow: 0 0 0 2px var(--fresa);
+}
+
+.menuBoton {
+  display: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-right: -8px;
+  border: 0;
+  background: none;
+  border-radius: var(--radio-m);
+}
+.menuBoton:hover {
+  background: var(--amatista);
+}
+
+.movil {
+  display: none;
+}
+
+@media (max-width: 1120px) {
+  .fila {
+    gap: 18px;
+  }
+  .buscar kbd {
+    display: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .enlaces,
+  .buscar,
+  .cuenta {
+    display: none;
+  }
+  .menuBoton {
+    display: grid;
+    margin-left: auto;
+  }
+  .movil[data-open="true"] {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: fixed;
+    top: var(--menu-top, var(--nav-h));
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 39;
+    padding: 20px var(--margen) 32px;
+    background: var(--obsidiana);
+    overflow-y: auto;
+    animation: entrar 0.18s var(--ease);
+  }
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.buscarMovil {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px;
+  color: var(--texto-3);
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-m);
+}
+.buscarMovil:focus-within {
+  border-color: var(--fresa);
+}
+.buscarMovil input {
+  flex: 1;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  font-size: var(--t-m);
+}
+
+.movil nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  font-size: var(--t-l);
+  font-weight: 700;
+  font-stretch: 115%;
+  border-bottom: 1px solid var(--linea);
+  color: var(--texto-2);
+}
+.movil nav a[aria-current="page"] {
+  color: var(--fresa);
+}
+.movil nav a svg {
+  color: var(--texto-3);
+}
+
+.cuentaMovil :global(.boton) {
+  width: 100%;
+  height: 48px;
+}

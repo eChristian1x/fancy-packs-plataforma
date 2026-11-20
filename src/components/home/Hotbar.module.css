@@ -1,0 +1,116 @@
+.hotbar {
+  --casilla: clamp(34px, calc((100vw - 2 * var(--margen) - 14px) / 9), 66px);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+/* Nombre del objeto "en la mano", como el texto que aparece sobre la hotbar en el juego */
+.mano {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-height: 28px;
+  font-weight: 800;
+  font-stretch: 118%;
+  text-shadow: 2px 2px 0 rgb(0 0 0 / 0.55);
+}
+.nombre {
+  font-size: var(--t-xl);
+  color: var(--nata);
+}
+.cuantos {
+  font-size: var(--t-s);
+  color: var(--miel);
+}
+
+.casillas {
+  display: flex;
+  padding: 5px;
+  background: #0e0a11;
+  box-shadow: inset 0 0 0 2px #2c2233, 0 10px 30px -10px rgb(0 0 0 / 0.8);
+}
+.casillas li {
+  animation: aparecer 0.36s var(--ease) both;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.85);
+  }
+}
+
+.casilla {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--casilla);
+  height: var(--casilla);
+  background: #2a2131;
+  /* bisel: claro arriba-izquierda, oscuro abajo-derecha */
+  box-shadow: inset 3px 3px 0 #3a2f43, inset -3px -3px 0 #1b151f;
+  outline: none;
+}
+.casilla::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 4px solid transparent;
+  pointer-events: none;
+  transition: border-color 0.12s var(--ease);
+  z-index: 1;
+}
+.casilla[data-sel]::after {
+  border-color: var(--fresa);
+  box-shadow: 0 0 0 2px #0e0a11, 0 0 18px rgb(255 111 177 / 0.35);
+}
+.casilla:focus-visible::after {
+  border-color: var(--nata);
+}
+
+.icono {
+  width: 52%;
+  height: 52%;
+  transition: transform 0.15s var(--ease);
+  filter: drop-shadow(2px 2px 0 rgb(0 0 0 / 0.45));
+}
+.casilla[data-sel] .icono {
+  transform: translateY(-2px) scale(1.08);
+}
+
+/* Cantidad estilo pila de ítems: abajo a la derecha, con sombra dura */
+.pila {
+  position: absolute;
+  right: 5px;
+  bottom: 2px;
+  font-size: clamp(11px, calc(var(--casilla) * 0.26), 16px);
+  font-weight: 800;
+  font-stretch: 100%;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 2px 2px 0 #3f3346;
+  font-variant-numeric: tabular-nums;
+}
+
+.pista {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.pista kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  font: 600 12px/1 var(--font-archivo), sans-serif;
+  color: var(--texto-2);
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-s);
+}
+
+@media (hover: none) {
+  .pista {
+    display: none;
+  }
+}

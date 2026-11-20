@@ -1,0 +1,130 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--amatista);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-l);
+  overflow: hidden;
+  box-shadow: var(--sombra-1);
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.card:hover {
+  border-color: rgb(255 111 177 / 0.55);
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-2);
+}
+.card:focus-within {
+  border-color: var(--fresa);
+}
+
+.portada {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--obsidiana-2);
+  overflow: hidden;
+}
+.portada img {
+  object-fit: cover;
+  transition: transform 0.45s var(--ease);
+}
+.card:hover .portada img {
+  transform: scale(1.04);
+}
+.sinImagen {
+  position: absolute;
+  inset: 0;
+  background: repeating-conic-gradient(var(--amatista-2) 0 25%, var(--obsidiana-2) 0 50%) 0 0 / 24px 24px;
+}
+
+.sobre {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+}
+.sobre > :only-child:not(:global(.chip-miel)) {
+  margin-left: auto;
+}
+
+.res {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.cuerpo {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px 14px;
+  flex: 1;
+  align-content: start;
+}
+
+.titulo {
+  font-size: 1.0625rem;
+  font-stretch: 110%;
+  font-weight: 750;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+/* El título cubre toda la tarjeta: un solo enlace por tarjeta para lectores de pantalla */
+.enlace::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.enlace:focus-visible {
+  outline: none;
+}
+.card:hover .enlace {
+  color: var(--fresa-claro);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--linea);
+  font-size: var(--t-xs);
+}
+
+/* En el catálogo, en pantallas angostas: tarjeta horizontal para ver más packs por pantalla */
+@media (max-width: 560px) {
+  .catalogo {
+    flex-direction: row;
+  }
+  .catalogo .portada {
+    flex: none;
+    width: 42%;
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+  .catalogo .cuerpo {
+    gap: 8px;
+    padding: 12px;
+  }
+  .catalogo .titulo {
+    font-size: var(--t-m);
+  }
+  .catalogo .meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding-top: 8px;
+  }
+  .catalogo .sobre :global(.chip-miel) {
+    display: none;
+  }
+}

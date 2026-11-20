@@ -1,0 +1,22 @@
+.vacio {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  padding: 28px;
+  font-size: var(--t-s);
+  color: var(--texto-2);
+  background: var(--obsidiana-2);
+  border: 1px dashed var(--linea-2);
+  border-radius: var(--radio-l);
+}
+.vacio[data-tone="error"] {
+  border-color: rgb(255 122 122 / 0.5);
+}
+.vacio :global(.boton) {
+  margin-top: 8px;
+}
+.titulo {
+  font-size: var(--t-m);
+  font-weight: 700;
+  color: var(--nata);
+}

@@ -1,0 +1,11 @@
+.aviso {
+  padding-block: 7px;
+  font-size: var(--t-xs);
+  color: var(--texto-2);
+  background: #241d10;
+  border-bottom: 1px solid rgb(255 212 71 / 0.25);
+}
+.aviso b {
+  color: var(--miel);
+  font-weight: 700;
+}
