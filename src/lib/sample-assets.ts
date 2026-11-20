@@ -2,11 +2,10 @@
  * Galería, archivos descargables, dependencias y huellas visuales del contenido de ejemplo
  * (scripts/samples/manifest.json). Se puede correr las veces que sea: reemplaza lo de ejemplo.
  */
-import fs from "node:fs";
-import path from "node:path";
 import { and, eq, inArray, sql } from "drizzle-orm";
-import type { Db } from "../src/lib/db/client";
-import * as s from "../src/lib/db/schema";
+import manifestJson from "../../scripts/samples/manifest.json";
+import type { Db } from "./db/client";
+import * as s from "./db/schema";
 
 type FileInfo = { path: string; name: string; size: number; sha1: string; sha512: string };
 type Entry = {
@@ -20,7 +19,7 @@ type Entry = {
 export type Manifest = Record<string, Entry>;
 
 export function loadManifest(): Manifest {
-  return JSON.parse(fs.readFileSync(path.join(process.cwd(), "scripts/samples/manifest.json"), "utf8"));
+  return manifestJson as unknown as Manifest;
 }
 
 export async function seedSampleAssets(db: Db) {

@@ -3,7 +3,7 @@
  * (la app no tiene permisos de DDL, pero esto solo es DML).
  *   npx tsx scripts/sample-assets-sql.ts > /tmp/assets.sql
  */
-import { loadManifest } from "./sample-assets";
+import { loadManifest } from "../src/lib/sample-assets";
 
 const m = loadManifest();
 const q = (s: string) => `'${s.replace(/'/g, "''")}'`;

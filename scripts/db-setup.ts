@@ -10,7 +10,7 @@
 import { sql } from "drizzle-orm";
 import * as s from "../src/lib/db/schema";
 import { refreshSearchText } from "../src/lib/db/search";
-import { seedSampleAssets } from "./sample-assets";
+import { seedSampleAssets } from "../src/lib/sample-assets";
 import { openScriptDb } from "./script-db";
 import {
   CATEGORIES,
