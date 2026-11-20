@@ -4,6 +4,8 @@ Nueva versión de Fancy Packs: texturas PvP, overlays y mods para Minecraft Java
 
 Esta carpeta es un proyecto nuevo y no reemplaza al sitio anterior (`fancy-packs/`). Ese sitio puede seguir publicado en GitHub Pages hasta que esta plataforma tenga descargas reales (etapa 4).
 
+**En línea:** https://fancy-packs.vercel.app. Cada cambio que llega a la rama `main` de GitHub se publica solo en Vercel en uno o dos minutos.
+
 **Estado:** etapas 1 a 3 terminadas: análisis, página principal y catálogo de texturas y overlays con búsqueda. Ver [ARQUITECTURA.md](ARQUITECTURA.md).
 
 ---
@@ -36,9 +38,16 @@ Las imágenes de ejemplo (`public/samples/`) se generan con `python3 scripts/sam
 
 ---
 
-## Publicarlo (Supabase + Vercel)
+## Publicación (Supabase + Vercel)
 
-Todavía no hace falta: conviene hacerlo cuando estén las etapas 3 y 4. Cuando toque:
+Ya está montada así:
+
+- **GitHub:** `eChristian1x/fancy-packs-plataforma`, rama `main`.
+- **Vercel:** el proyecto `fancy-packs` publica en https://fancy-packs.vercel.app. Sus variables de entorno son `DATABASE_URL` (marcada como sensible) y `NEXT_PUBLIC_SITE_URL`.
+- **Supabase:** el proyecto `fancy-packs` (ref `bwpribnkiloppvaagdqn`, región us-east-1). La app se conecta por el *transaction pooler* (`aws-1-us-east-1.pooler.supabase.com:6543`) con el usuario `fancy_app`, que solo puede leer y escribir datos (no puede crear tablas) y tiene políticas RLS propias.
+- **Contenido de ejemplo:** está cargado en Supabase para revisar el sitio. Se quita con `delete from resources where is_sample; delete from profiles where is_sample;` en el editor SQL de Supabase.
+
+Para montarlo desde cero en otra cuenta:
 
 1. **Supabase.** Crea un proyecto en [supabase.com](https://supabase.com). En *Project Settings → Database → Connection string* copia la de **Transaction pooler**.
 2. **Base de datos.** En tu PC crea un archivo `.env` (copia `.env.example`), pega esa cadena en `DATABASE_URL` y corre `npm run db:setup`. Eso crea las tablas, las categorías y las versiones de Minecraft. El contenido de ejemplo **no** se carga en Supabase, salvo que corras `npm run db:seed`.
