@@ -574,3 +574,105 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ---------------------------------------------------------------- etapa 4+: galería, .zip de ejemplo y huellas
+import hashlib
+import io
+import json
+import zipfile
+
+from seed_formats import FORMAT_FOR  # tabla versión → pack_format
+
+
+def gallery_items(theme_name, mode, out):
+    """Captura 1: fila de objetos del pack, grandes, sobre fondo oscuro."""
+    t = THEMES[theme_name]
+    im = background(t, scale=6)
+    dark = Image.new("RGBA", (W, H), (14, 10, 18, 170))
+    im.alpha_composite(dark)
+    items = HOTBAR.get(mode, ["sword", "gem", "potion", "apple", "orb"])
+    size = 9
+    gap = 22
+    total = len(items) * S * size + (len(items) - 1) * gap
+    x = (W - total) // 2
+    for name in items:
+        spr = SPRITES[name](t).image(size)
+        s2, pad = drop_shadow(spr, offset=(8, 10), alpha=100, blur=5)
+        im.alpha_composite(s2, (x - pad, (H - spr.height) // 2 - pad))
+        x += spr.width + gap
+    im.convert("RGB").save(out, "WEBP", quality=86, method=6)
+
+
+def gallery_blocks(theme_name, sprite, out):
+    """Captura 2: bloques del pack en mosaico con el objeto principal encima."""
+    t = THEMES[theme_name]
+    im = background(t, scale=12)
+    spr = SPRITES[sprite](t).image(14)
+    s2, pad = drop_shadow(spr)
+    im.alpha_composite(s2, (W // 2 - spr.width // 2 - pad + 180, H // 2 - spr.height // 2 - pad))
+    bar = hotbar(HOTBAR.get(sprite, ["sword", "apple", "gem", "potion", "orb"]) if sprite in HOTBAR else ["sword", "apple", "gem", "potion", "orb"], t, slot=72, scale=3)
+    im.alpha_composite(bar, (60, H - bar.height - 50))
+    im.convert("RGB").save(out, "WEBP", quality=86, method=6)
+
+
+def png_bytes(img):
+    b = io.BytesIO()
+    img.save(b, "PNG", optimize=True)
+    return b.getvalue()
+
+
+def sample_zip(slug, name, theme_name, mode, resolution, versions, kind):
+    """Resource pack válido con arte propio. Solo reemplaza texturas de objetos (ítems)."""
+    t = THEMES[theme_name]
+    formats = sorted({FORMAT_FOR[v] for v in versions if v in FORMAT_FOR})
+    legacy = all(FORMAT_FOR.get(v, 99) <= 3 for v in versions)  # 1.8.9–1.12: carpeta "items"
+    folder = "items" if legacy else "item"
+    scale = max(1, (resolution or 16) // 16)
+    mcmeta = {"pack": {"pack_format": int(formats[-1]), "description": f"{name} · Fancy Packs (ejemplo)"}}
+    if len(formats) > 1 and not legacy and formats[0] < 65:
+        mcmeta["pack"]["supported_formats"] = [int(formats[0]), int(formats[-1])]
+    if formats[-1] >= 65:  # desde 1.21.9 el juego usa min_format / max_format
+        mcmeta["pack"]["min_format"] = int(formats[0])
+        mcmeta["pack"]["max_format"] = int(formats[-1])
+    files = {
+        "pack.mcmeta": json.dumps(mcmeta, ensure_ascii=False, indent=2).encode(),
+        "pack.png": png_bytes(SPRITES[HERO.get(mode, "sword")](t).image(4).resize((64, 64), Image.NEAREST)),
+        "LEEME.txt": (
+            f"{name} es un pack de EJEMPLO de Fancy Packs.\n"
+            "Todo el arte es original (no contiene texturas de Mojang).\n"
+            "Sirve para probar descargas e instalación.\n"
+        ).encode(),
+    }
+    if kind == "texture":
+        mapping = {"sword": "diamond_sword", "apple": "golden_apple", "orb": "ender_pearl", "trident": "trident", "mace": "mace"}
+        for spr, tex in mapping.items():
+            if legacy and tex in ("trident", "mace"):
+                continue
+            img = SPRITES[spr](t).image(scale)
+            files[f"assets/minecraft/textures/{folder}/{tex}.png"] = png_bytes(img)
+    else:
+        files["assets/minecraft/textures/item/totem_of_undying.png"] = png_bytes(SPRITES["orb"](t).image(scale))
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for p, data in sorted(files.items()):
+            zi = zipfile.ZipInfo(p, date_time=(2026, 11, 1, 0, 0, 0))
+            zi.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(zi, data)
+    return buf.getvalue()
+
+
+def features(path):
+    """Huella visual. DEBE coincidir con src/lib/image-features.ts."""
+    import numpy as np
+
+    im = Image.open(path).convert("RGB").resize((256, 256), Image.BILINEAR)
+    a = np.asarray(im, dtype=np.float64)
+    small = a.reshape(32, 8, 32, 8, 3).mean(axis=(1, 3))  # promedio 8×8 → 32×32
+    q = np.clip(np.round(small), 0, 255).astype(np.int64)
+    idx = (q[..., 0] >> 6) * 16 + (q[..., 1] >> 6) * 4 + (q[..., 2] >> 6)
+    hist = np.bincount(idx.ravel(), minlength=64) / 1024.0
+    grid = small.reshape(4, 8, 4, 8, 3).mean(axis=(1, 3)).ravel() / 255.0
+    v = np.concatenate([np.sqrt(hist), grid * 0.5])
+    v = v / (np.linalg.norm(v) or 1.0)
+    return [round(float(x), 5) for x in v]

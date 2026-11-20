@@ -8,6 +8,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  agentRules: false,
   // PGlite trae archivos .wasm: se carga desde node_modules en vez de empaquetarse.
   serverExternalPackages: ["@electric-sql/pglite"],
   poweredByHeader: false,

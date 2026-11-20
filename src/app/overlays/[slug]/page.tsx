@@ -1,20 +1,13 @@
-import type { Metadata } from "next";
-import { StagePlaceholder } from "@/components/ui/StagePlaceholder";
+import { loadOr404, ResourcePage, resourceMetadata } from "@/components/resource/ResourcePage";
+import { getViewer } from "@/lib/auth/viewer";
 
-export const metadata: Metadata = { robots: { index: false } };
+type Props = { params: Promise<{ slug: string }> };
 
-export default function Page() {
-  return (
-    <StagePlaceholder
-      stage={4}
-      title="Página del pack"
-      description="Cada pack va a tener su propia página con todo lo necesario para decidir y descargar."
-      items={[
-        "Galería de capturas, descripción completa y categorías",
-        "Versiones compatibles, resolución, fecha de publicación y de actualización",
-        "Botón de descarga que registra cada descarga, con tamaño y SHA-1 del archivo",
-        "Packs relacionados, comentarios y valoraciones",
-      ]}
-    />
-  );
+export async function generateMetadata({ params }: Props) {
+  return resourceMetadata("overlay", (await params).slug);
+}
+
+export default async function Page({ params }: Props) {
+  const r = await loadOr404("overlay", (await params).slug);
+  return <ResourcePage r={r} viewer={await getViewer(r)} />;
 }

@@ -1,0 +1,63 @@
+.acciones {
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+}
+.acciones > :global(.boton) {
+  justify-content: center;
+}
+.activo {
+  color: var(--fresa);
+  border-color: var(--fresa);
+}
+.activo svg {
+  fill: currentColor;
+}
+.ayuda {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+  text-align: center;
+}
+.ayuda a {
+  color: var(--fresa);
+}
+.valorar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.valorar legend {
+  float: left;
+  font-size: var(--t-s);
+  color: var(--texto-2);
+}
+.estrellas {
+  display: flex;
+}
+.estrellas button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--amatista-3);
+  cursor: pointer;
+}
+.estrellas button[data-on] {
+  color: var(--miel);
+}
+.estrellas button:focus-visible {
+  outline: 2px solid var(--fresa);
+  outline-offset: 1px;
+}
+.error {
+  font-size: var(--t-xs);
+  color: var(--error);
+}

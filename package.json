@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.17",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.2",
     "drizzle-orm": "^0.45.4",
+    "fflate": "^0.8.3",
     "next": "^16.4.6",
     "postgres": "^4.1.1",
     "react": "^19.3.1",
@@ -29,7 +32,8 @@
     "axe-core": "^4.14.1",
     "drizzle-kit": "^0.31.11",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
   },
   "engines": {
     "node": ">=20.12"

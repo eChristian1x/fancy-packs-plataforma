@@ -1,0 +1,135 @@
+.seccion {
+  display: grid;
+  gap: 18px;
+  padding-top: 28px;
+  border-top: 1px solid var(--linea);
+}
+.h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: var(--t-xl);
+  font-stretch: 115%;
+}
+.h2 span {
+  font-size: var(--t-m);
+  color: var(--texto-3);
+}
+.tenue {
+  color: var(--texto-3);
+}
+.entrar {
+  padding: 14px 16px;
+  border: 1px dashed var(--linea-2);
+  border-radius: var(--radio-m);
+  color: var(--texto-2);
+}
+.entrar a {
+  color: var(--fresa);
+  font-weight: 700;
+}
+.form {
+  display: grid;
+  gap: 10px;
+}
+.form textarea {
+  width: 100%;
+  min-height: 92px;
+  padding: 12px 14px;
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-m);
+  background: var(--obsidiana-2);
+  color: var(--nata);
+  font: inherit;
+  resize: vertical;
+}
+.form textarea:focus {
+  outline: 2px solid var(--fresa);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+.formPie {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.formPie button {
+  margin-left: auto;
+}
+.cuenta {
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.error {
+  font-size: var(--t-xs);
+  color: var(--error);
+}
+.lista {
+  display: grid;
+  gap: 4px;
+}
+.comentario {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+}
+.comentario + .comentario {
+  border-top: 1px solid var(--linea);
+}
+.comentario > svg,
+.comentario > img {
+  flex: none;
+  border-radius: var(--radio-s);
+}
+.cuerpo {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.nombre {
+  font-size: var(--t-s);
+  font-weight: 700;
+  color: var(--nata);
+}
+.nombre:hover {
+  color: var(--fresa);
+}
+.nota {
+  letter-spacing: 1px;
+  color: var(--miel);
+}
+.notaVacia {
+  color: var(--amatista-3);
+}
+.texto {
+  color: var(--texto-2);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.borrar {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--t-xs);
+  color: var(--texto-3);
+}
+.borrar button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--fresa);
+  text-decoration: underline;
+}
+button.borrar:hover {
+  color: var(--error);
+}

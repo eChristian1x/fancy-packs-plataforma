@@ -24,6 +24,7 @@ import {
   pgEnum,
   pgTable,
   primaryKey,
+  real,
   serial,
   smallint,
   text,
@@ -58,6 +59,8 @@ export const profiles = pgTable(
     role: userRole("role").notNull().default("user"),
     socials: jsonb("socials").$type<SocialLink[]>().notNull().default([]),
     isVerified: boolean("is_verified").notNull().default(false),
+    /** Cuenta suspendida por un administrador: no puede publicar ni comentar. */
+    isBanned: boolean("is_banned").notNull().default(false),
     /** Datos de prueba: se muestran marcados y se borran con `npm run db:clear-samples`. */
     isSample: boolean("is_sample").notNull().default(false),
     ...timestamps,
@@ -117,6 +120,8 @@ export const resources = pgTable(
     mcVersions: text("mc_versions").array().notNull().default(sql`'{}'::text[]`),
     loaders: modLoader("loaders").array().notNull().default(sql`'{}'::mod_loader[]`),
     status: resourceStatus("status").notNull().default("draft"),
+    /** Motivo que ve el creador cuando un administrador rechaza la publicación. */
+    rejectionReason: text("rejection_reason"),
     featured: boolean("featured").notNull().default(false),
     isSample: boolean("is_sample").notNull().default(false),
     coverUrl: text("cover_url"),
@@ -333,6 +338,26 @@ export const reports = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("reports_status_idx").on(t.status, t.createdAt)],
+).enableRLS();
+
+/**
+ * Huella visual de cada imagen (portada y galería) para "Buscar por captura".
+ * Vector de colores y forma general calculado en el navegador al subir la imagen
+ * (src/lib/image-features.ts). Se compara por similitud de coseno.
+ */
+export const imageFeatures = pgTable(
+  "image_features",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+    url: text("url").notNull(),
+    kind: varchar("kind", { length: 12 }).notNull().default("gallery"),
+    vector: real("vector").array().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("image_features_resource_idx").on(t.resourceId)],
 ).enableRLS();
 
 /** Ajustes editables del sitio (nombre, frase, contacto…). Los usa también la API del mod. */

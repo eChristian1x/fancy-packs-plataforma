@@ -10,6 +10,7 @@
 import { sql } from "drizzle-orm";
 import * as s from "../src/lib/db/schema";
 import { refreshSearchText } from "../src/lib/db/search";
+import { seedSampleAssets } from "./sample-assets";
 import { openScriptDb } from "./script-db";
 import {
   CATEGORIES,
@@ -52,13 +53,15 @@ async function main() {
   const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(s.resources);
   const wantSamples = forceSamples || (kind === "pglite" && n === 0);
   if (!wantSamples) {
+    if (kind === "pglite") await seedSampleAssets(db);
     console.log(`Base lista (${kind}). ${n} recursos.`);
     await close();
     return;
   }
   const already = await db.select({ n: sql<number>`count(*)::int` }).from(s.resources).where(sql`${s.resources.isSample}`);
   if (already[0].n > 0) {
-    console.log("El contenido de ejemplo ya estaba cargado.");
+    const n = await seedSampleAssets(db);
+    console.log(`El contenido de ejemplo ya estaba cargado (archivos y galerías de ${n} recursos actualizados).`);
     await close();
     return;
   }
@@ -123,6 +126,7 @@ async function main() {
     }
   }
   await refreshSearchText(db);
+  await seedSampleAssets(db);
   console.log(`Contenido de ejemplo cargado: ${SAMPLE_CREATORS.length} creadores, ${SAMPLE_RESOURCES.length} recursos.`);
   await close();
 }

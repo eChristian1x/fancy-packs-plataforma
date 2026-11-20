@@ -1,15 +1,13 @@
-import type { Metadata } from "next";
-import { StagePlaceholder } from "@/components/ui/StagePlaceholder";
+import { loadOr404, ResourcePage, resourceMetadata } from "@/components/resource/ResourcePage";
+import { getViewer } from "@/lib/auth/viewer";
 
-export const metadata: Metadata = { robots: { index: false } };
+type Props = { params: Promise<{ slug: string }> };
 
-export default function Page() {
-  return (
-    <StagePlaceholder
-      stage={5}
-      title="Página del mod"
-      description="Cada mod va a tener su página con archivos por versión y dependencias."
-      items={["Archivos descargables por versión y loader", "Historial de versiones con cambios", "Dependencias obligatorias y opcionales", "Galería y descripción"]}
-    />
-  );
+export async function generateMetadata({ params }: Props) {
+  return resourceMetadata("mod", (await params).slug);
+}
+
+export default async function Page({ params }: Props) {
+  const r = await loadOr404("mod", (await params).slug);
+  return <ResourcePage r={r} viewer={await getViewer(r)} />;
 }

@@ -57,6 +57,7 @@ export async function buildModIndex() {
       mcVersions: resources.mcVersions,
       featured: resources.featured,
       iconUrl: resources.iconUrl,
+      coverUrl: resources.coverUrl,
       createdAt: resources.publishedAt,
       updatedAt: resources.updatedAt,
     })
@@ -111,7 +112,7 @@ export async function buildModIndex() {
       mc_versions: r.mcVersions,
       tags: tags.filter((t) => t.resourceId === r.id).map((t) => t.slug),
       featured: r.featured,
-      icon: r.iconUrl ? `${base}/icon` : g.length ? `${base}/gallery/1` : null,
+      icon: r.iconUrl || r.coverUrl ? `${base}/icon` : g.length ? `${base}/gallery/1` : null,
       gallery: g.map((_, i) => `${base}/gallery/${i + 1}`),
       download: { url: `${base}/${file.fileName}`, filename: file.fileName, size: file.sizeBytes, sha1: file.sha1, sha512: file.sha512 },
       created: (r.createdAt ?? r.updatedAt).toISOString(),
