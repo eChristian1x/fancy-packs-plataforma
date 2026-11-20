@@ -68,3 +68,13 @@ export function versionsFromMeta(m: PackMeta): string[] {
   if (m.min == null || m.max == null) return [];
   return versionsForFormats(m.min, m.max);
 }
+
+/** Campos de "pack" en pack.mcmeta para un pack_format destino (con min/max desde 1.21.9 y supported_formats desde 1.20.2). */
+export function packFields(format: number): Record<string, unknown> {
+  const major = Math.floor(format);
+  const minor = Math.round((format - major) * 10);
+  const out: Record<string, unknown> = { pack_format: major };
+  if (major >= 65) Object.assign(out, { min_format: major, max_format: minor ? [major, minor] : major });
+  else if (major >= 18) out.supported_formats = [major, major];
+  return out;
+}

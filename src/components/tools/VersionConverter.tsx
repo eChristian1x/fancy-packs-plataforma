@@ -2,6 +2,7 @@
 
 import { strFromU8, strToU8, zipSync } from "fflate";
 import { useMemo, useState } from "react";
+import { packFields } from "@/lib/pack-format";
 import { RESOURCE_PACK_FORMATS } from "@/lib/pack-format-table";
 import { BLOCK_RENAMES, BLOCK_RENAMES_BACK, ITEM_RENAMES, ITEM_RENAMES_BACK, type LoadedPack } from "@/lib/pack-reader";
 import { versionRange } from "@/lib/versions";
@@ -30,13 +31,7 @@ function mcmetaFor(original: Uint8Array | undefined, format: number, label: stri
   delete pack.supported_formats;
   delete pack.min_format;
   delete pack.max_format;
-  const major = Math.floor(format);
-  const minor = Math.round((format - major) * 10);
-  pack.pack_format = major;
-  if (major >= 65) {
-    pack.min_format = major;
-    pack.max_format = minor ? [major, minor] : major;
-  } else if (major >= 18) pack.supported_formats = [major, major];
+  Object.assign(pack, packFields(format));
   const d = typeof pack.description === "string" ? pack.description : "";
   pack.description = d ? `${d} (${label})` : label;
   return strToU8(JSON.stringify({ ...root, pack }, null, 2));

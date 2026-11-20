@@ -164,6 +164,15 @@ export function modernKey(path: string) {
   return `${isItem ? "item" : "block"}/${(isItem ? ITEM_RENAMES : BLOCK_RENAMES)[name] ?? name}`;
 }
 
+/** Ruta de 1.12 o anterior ("items/apple_golden") a partir de cualquier ruta bajo textures/. */
+export function legacyKey(rel: string) {
+  const m = rel.match(/^(items|item|blocks|block)\/(.+)$/);
+  if (!m) return rel;
+  const isItem = m[1].startsWith("item");
+  const modernName = (isItem ? ITEM_RENAMES : BLOCK_RENAMES)[m[2]] ?? m[2];
+  return `${isItem ? "items" : "blocks"}/${(isItem ? ITEM_RENAMES_BACK : BLOCK_RENAMES_BACK)[modernName] ?? modernName}`;
+}
+
 // ------------------------------------------------------------------ texturas que importan en PvP
 
 export const PVP_SLOTS = [

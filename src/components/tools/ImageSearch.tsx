@@ -95,6 +95,7 @@ export function ImageSearch() {
             {results.length > 0 && (
               <ol className={styles.resultados} style={{ marginTop: 12 }}>
                 {results.map((m) => {
+                  // Similitud de coseno de las huellas centradas: 1 = igual, 0 = nada en común.
                   const pct = Math.max(0, Math.min(100, Math.round(m.score * 100)));
                   return (
                     <li key={m.slug} className={styles.resultado}>
