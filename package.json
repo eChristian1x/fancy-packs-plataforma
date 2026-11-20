@@ -11,7 +11,9 @@
     "db:generate": "drizzle-kit generate",
     "db:setup": "tsx scripts/db-setup.ts",
     "db:seed": "tsx scripts/db-setup.ts --seed",
-    "db:clear-samples": "tsx scripts/clear-samples.ts"
+    "db:clear-samples": "tsx scripts/clear-samples.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.17",

@@ -113,8 +113,4 @@ export async function requireStaff(back: string) {
   return u;
 }
 
-/** Solo rutas internas: evita redirecciones abiertas a otros sitios. */
-export function safeNext(v: unknown, fallback = "/") {
-  const s = typeof v === "string" ? v : "";
-  return s.startsWith("/") && !s.startsWith("//") && !s.startsWith("/\\") ? s : fallback;
-}
+export { safeNext } from "@/lib/safe-next";
