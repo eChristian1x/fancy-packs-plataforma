@@ -5,6 +5,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { approveResource, approveVersion, rejectResource, rejectVersion } from "@/lib/actions/admin";
 import { relativeDate } from "@/lib/format";
 import { getPending } from "@/lib/queries/admin";
+import { getMyResources } from "@/lib/queries/panel";
+import { getSessionUser } from "@/lib/auth/session";
+import { checklistFor } from "@/lib/publishing";
 import { creatorHref, resourceHref, TYPE_LABEL } from "@/lib/routes";
 import { fileUrl } from "@/lib/storage";
 
@@ -13,13 +16,43 @@ export const metadata = { title: "Por revisar" };
 const size = (n: number) => (n < 1048576 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1048576).toFixed(1)} MB`);
 
 export default async function Page() {
-  const { items, versions } = await getPending();
+  const [{ items, versions }, me] = await Promise.all([getPending(), getSessionUser()]);
+  // Lo que sube un admin no pasa por esta cola: se publica desde su editor. Se lista aquí para no perderlo.
+  const mine = me ? (await getMyResources(me.id)).filter((r) => r.status === "draft" || r.status === "rejected") : [];
+  const missing = await Promise.all(mine.map(async (r) => (await checklistFor(r.id)).filter((c) => !c.done).map((c) => c.label.toLowerCase())));
   return (
     <>
       <header className={styles.titulo}>
         <h1>Por revisar</h1>
         <p>Revisa que sea contenido propio o con permiso, que las capturas correspondan y que el archivo sea lo que dice.</p>
       </header>
+      {mine.length > 0 && (
+        <section aria-labelledby="mios">
+          <h2 id="mios" className={styles.h2}>Tus borradores ({mine.length})</h2>
+          <p className={styles.sub}>Lo que subes tú no necesita aprobación: termínalo y presiona «Publicar» en su editor.</p>
+          <ul style={{ display: "grid", gap: 12, marginTop: 12 }}>
+            {mine.map((r, i) => (
+              <li key={r.id} className={styles.tarjeta}>
+                {r.coverUrl ? <img src={r.coverUrl} alt="" /> : <span />}
+                <div className={styles.tarjetaCuerpo}>
+                  <h3>{r.name}</h3>
+                  <div className={styles.datos}>
+                    <span>{TYPE_LABEL[r.type].one}</span>
+                    <span>{r.versions} {r.versions === 1 ? "versión" : "versiones"}</span>
+                    <span>editado {relativeDate(r.updatedAt)}</span>
+                  </div>
+                  <p>{missing[i].length ? `Falta: ${missing[i].join(", ")}.` : "Listo para publicar."}</p>
+                  <div className={styles.botones}>
+                    <Link href={`/panel/recursos/${r.id}`} className={styles.btn} data-tone="principal">
+                      {missing[i].length ? "Terminar y publicar" : "Abrir y publicar"}
+                    </Link>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <section aria-labelledby="pub">
         <h2 id="pub" className={styles.h2}>Publicaciones nuevas ({items.length})</h2>
         {items.length === 0 ? (
