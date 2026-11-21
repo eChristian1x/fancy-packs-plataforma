@@ -104,3 +104,21 @@
   color: var(--fresa-claro);
   background: var(--fresa-tinte);
 }
+
+.bloque pre {
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 12px 14px;
+  border: 1px solid var(--linea-2);
+  border-radius: var(--radio-m);
+  background: var(--obsidiana);
+  font-size: var(--t-s);
+  line-height: 1.5;
+}
+.bloque pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  white-space: pre;
+  color: var(--nata);
+}

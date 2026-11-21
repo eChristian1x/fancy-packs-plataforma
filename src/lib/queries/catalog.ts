@@ -12,7 +12,7 @@ import { CACHE_TAG, selectCards, type ResourceCard } from "./resources";
 const likeEscape = (s: string) => s.replace(/[\\%_]/g, (c) => "\\" + c);
 
 /** Cada palabra tiene que aparecer (o parecerse: tolera errores de escritura). */
-function textCondition(q: string): SQL | undefined {
+export function textCondition(q: string): SQL | undefined {
   const terms = q.split(/\s+/).filter(Boolean).slice(0, 6);
   if (!terms.length) return undefined;
   return and(
@@ -24,7 +24,7 @@ function textCondition(q: string): SQL | undefined {
   );
 }
 
-function relevance(q: string): SQL {
+export function relevance(q: string): SQL {
   const terms = q.split(/\s+/).filter(Boolean).slice(0, 6);
   if (!terms.length) return sql`0`;
   return sql.join(
@@ -82,7 +82,7 @@ function conditions(type: ResourceType, q: CatalogQuery, except?: Facet): SQL {
  * se descarga mucho suba por encima de uno viejo. Cuando haya registro de descargas (etapa 4)
  * se puede cambiar por "descargas de los últimos 30 días".
  */
-const POPULARITY = sql`(${resources.downloadCount} + 5 * ${resources.favoriteCount})
+export const POPULARITY = sql`(${resources.downloadCount} + 5 * ${resources.favoriteCount})
   / power(greatest(extract(epoch from (now() - ${resources.publishedAt})) / 86400, 0) + 2, 0.7)`;
 
 function orderBy(q: CatalogQuery): SQL[] {

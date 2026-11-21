@@ -25,7 +25,7 @@ const COLUMNS = [
     title: "Ayuda",
     links: [
       { href: "/ayuda/instalar", label: "Cómo instalar un pack" },
-      { href: "/api/v1/packs.json", label: "API para el mod" },
+      { href: "/ayuda/api", label: "API para mods" },
     ],
   },
 ];

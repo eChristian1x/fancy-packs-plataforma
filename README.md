@@ -73,6 +73,17 @@ Todas las tablas tienen RLS activado y la API pública de Supabase no puede leer
 
 ---
 
+## API para mods (v1)
+
+Documentada en `/ayuda/api`. Respuestas JSON en snake_case con URLs absolutas, sin clave y con CORS abierto.
+
+| Ruta | Qué devuelve |
+| --- | --- |
+| `GET /api/v1/packs?q=&sort=&version=&page=` | Lista y búsqueda de texturas y overlays (`sort`: popular, downloads, recent, updated, name, relevance; también `type`, `category`, `resolution`, `limit` y `samples=1`) |
+| `GET /api/v1/packs/{slug}` | Ficha: nombre, autor, descripción, ícono, fotos, categorías, versiones con su archivo y descargas |
+| `GET /api/v1/packs/{slug}/download` | Enlace directo del `.zip`, tamaño, SHA-1 y SHA-512 (`?version=` de Minecraft o `?release=` del pack). **Cuenta como descarga** (origen "mod", una vez por IP y pack cada 24 h) |
+| `GET /api/v1/packs.json`, `/api/v1/packs/{slug}.json` | Formato anterior, sin cambios |
+
 ## El mod "Fancy Packs · Texturas"
 
 El mod lee `/api/v1/packs.json`. Esta plataforma la mantiene con **el mismo formato** que generaba `scripts/build.py` en el sitio anterior, con las mismas etiquetas de modalidad (`netherite`, `sword`, `crystal`…).
