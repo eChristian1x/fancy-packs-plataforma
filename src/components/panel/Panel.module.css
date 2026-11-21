@@ -546,3 +546,8 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.lista li a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

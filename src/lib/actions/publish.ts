@@ -148,7 +148,7 @@ export async function saveInfo(_: FormState, form: FormData): Promise<FormState>
   await refreshSearchText(db, [r.id]);
   updateTag(resourceTag(r.slug));
   if (r.status === "published") updateTag("resources");
-  return { ok: "Cambios guardados." };
+  return { ok: valid.length ? "Cambios guardados." : "Cambios guardados. Para publicar falta elegir al menos una categoría." };
 }
 
 // ------------------------------------------------------------------ imágenes

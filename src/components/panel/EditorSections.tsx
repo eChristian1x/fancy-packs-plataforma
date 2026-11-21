@@ -39,6 +39,8 @@ export type EditorData = {
   categories: { id: number; name: string }[];
   gallery: { id: string; url: string }[];
   ownerDisplayName: string;
+  /** Admin o moderador: "Enviar a revisión" publica directo. */
+  staff: boolean;
 };
 
 /** Ejecuta una acción del servidor y refresca la página; muestra el error si lo hay. */
@@ -87,8 +89,9 @@ export function InfoSection({ d }: { d: EditorData }) {
             Deja una línea en blanco entre párrafos. Usa “- ” al inicio para listas, **así** para negritas y [texto](https://…) para enlaces.
           </p>
         </div>
-        <fieldset className={f.campo}>
-          <legend className={f.etiqueta}>Categorías <span className={f.opcional}>hasta 4</span></legend>
+        <fieldset className={f.campo} aria-describedby="cats-h">
+          <legend className={f.etiqueta}>Categorías</legend>
+          <p className={f.ayuda} id="cats-h">Elige al menos 1 (hasta 4). Sin categoría no se puede publicar.</p>
           <div className={styles.cats}>
             {d.categories.map((c) => (
               <label key={c.id} className={styles.cat}>
@@ -232,6 +235,9 @@ export function VersionList({ d, versions }: { d: EditorData; versions: { id: st
   );
 }
 
+/** A qué sección lleva cada punto pendiente de la lista. */
+const SECTION_FOR: Record<string, string> = { info: "#informacion", cat: "#informacion", res: "#informacion", cover: "#imagenes", file: "#versiones" };
+
 export function ReviewBox({ d, checklist }: { d: EditorData; checklist: { key: string; label: string; done: boolean }[] }) {
   const a = useAction();
   const ready = checklist.every((c) => c.done);
@@ -243,7 +249,7 @@ export function ReviewBox({ d, checklist }: { d: EditorData; checklist: { key: s
         {checklist.map((c) => (
           <li key={c.key} data-ok={c.done || undefined}>
             <span className={styles.marca} aria-hidden="true">{c.done ? <Icon name="check" size={14} /> : null}</span>
-            {c.label}
+            {c.done ? c.label : <a href={SECTION_FOR[c.key] ?? "#informacion"}>{c.label}</a>}
             <span className="solo-lectores">{c.done ? " (listo)" : " (falta)"}</span>
           </li>
         ))}
@@ -251,9 +257,17 @@ export function ReviewBox({ d, checklist }: { d: EditorData; checklist: { key: s
       {a.error && <p className={f.error} role="alert">{a.error}</p>}
       {a.message && <p className={f.exito} role="status">{a.message}</p>}
       {canSubmit && (
-        <button type="button" className="boton boton-principal" disabled={!ready || a.pending} onClick={() => a.run(() => submitForReview(d.id))}>
-          {a.pending ? "Enviando…" : "Enviar a revisión"}
-        </button>
+        <>
+          <button type="button" className="boton boton-principal" disabled={!ready || a.pending} onClick={() => a.run(() => submitForReview(d.id))}>
+            {a.pending ? (d.staff ? "Publicando…" : "Enviando…") : d.staff ? "Publicar" : "Enviar a revisión"}
+          </button>
+          {!ready && (
+            <p className={f.ayuda} role="note">
+              Para {d.staff ? "publicar" : "enviarlo"} falta: {checklist.filter((c) => !c.done).map((c) => c.label.toLowerCase()).join(", ")}. Toca cada punto de la lista para ir a su sección.
+            </p>
+          )}
+          {ready && d.staff && <p className={f.ayuda}>Eres admin: se publica al momento, sin pasar por revisión.</p>}
+        </>
       )}
       {d.status === "published" && (
         <Link href={`/${d.type === "mod" ? "mods" : d.type === "overlay" ? "overlays" : "texturas"}/${d.slug}`} className="boton boton-secundario boton-chico">

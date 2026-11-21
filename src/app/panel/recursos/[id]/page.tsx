@@ -46,6 +46,7 @@ export default async function Page({ params, searchParams }: Props) {
     categories: data.allCategories.map((c) => ({ id: c.id, name: c.name })),
     gallery: data.gallery.map((g) => ({ id: g.id, url: g.url })),
     ownerDisplayName: user.id === r.ownerId ? user.displayName : r.authorName,
+    staff: isStaff(user),
   };
   const versions = data.versions.map((v) => ({
     id: v.id,
@@ -76,7 +77,7 @@ export default async function Page({ params, searchParams }: Props) {
       {sp.nuevo && (
         <div className={styles.aviso} data-tono="ok" role="status">
           <b>Borrador creado.</b>
-          <p>Completa lo que falta en la lista de la derecha y envíalo a revisión. Puedes salir y volver cuando quieras.</p>
+          <p>Completa lo que falta en la lista de la derecha (incluye elegir al menos una categoría) y envíalo a revisión. Puedes salir y volver cuando quieras.</p>
         </div>
       )}
       {r.status === "pending" && (
