@@ -5,11 +5,12 @@
  *   Sirve para desarrollar sin crear cuentas; en producción siempre se usa DATABASE_URL.
  */
 import path from "node:path";
-import { drizzle as drizzlePostgres, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { attachDatabasePool } from "@vercel/functions";
+import { drizzle as drizzlePg, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 import * as schema from "./schema";
 
-export type Db = PostgresJsDatabase<typeof schema>;
+export type Db = NodePgDatabase<typeof schema>;
 
 type Holder = { db?: Db; ready?: Promise<Db>; kind?: "postgres" | "pglite" };
 const g = globalThis as typeof globalThis & { __fancyDb?: Holder };
@@ -20,10 +21,34 @@ export const LOCAL_DB_DIR = path.join(process.cwd(), ".data", "pglite");
 async function connect(): Promise<Db> {
   const url = process.env.DATABASE_URL?.trim();
   if (url) {
-    // prepare:false es necesario con el "transaction pooler" de Supabase.
-    const client = postgres(url, { prepare: false, max: Number(process.env.DATABASE_POOL_MAX ?? 5) });
+    /*
+     * node-postgres + attachDatabasePool (Vercel Fluid compute): las conexiones que quedan sin
+     * usar se cierran antes de que la instancia se suspenda. Con un cliente persistente
+     * (postgres.js) las conexiones quedaban colgadas cuando el pooler de Supabase las cerraba
+     * y las consultas esperaban hasta el límite de 300 s de la función.
+     * Drizzle con pg no usa sentencias preparadas con nombre, así que funciona con el
+     * "transaction pooler" de Supabase.
+     */
+    // TLS siempre que no sea local. Se quita sslmode de la URL porque pg lo interpreta como
+    // "verificar el certificado" y el del pooler de Supabase está firmado por su propia CA.
+    const u = new URL(url);
+    const local = ["localhost", "127.0.0.1", "::1"].includes(u.hostname);
+    u.searchParams.delete("sslmode");
+    const pool = new Pool({
+      connectionString: u.toString(),
+      ssl: local || process.env.DATABASE_SSL === "off" ? undefined : { rejectUnauthorized: false },
+      max: Number(process.env.DATABASE_POOL_MAX ?? 5),
+      idleTimeoutMillis: 5_000,
+      connectionTimeoutMillis: 8_000,
+      // Corta del lado del cliente cualquier consulta que tarde más de 20 s: mejor un error
+      // que una página colgada.
+      query_timeout: 20_000,
+      allowExitOnIdle: true,
+    });
+    pool.on("error", (e) => console.error("[db] conexión cerrada por el servidor:", e.message));
+    attachDatabasePool(pool);
     holder.kind = "postgres";
-    return drizzlePostgres(client, { schema });
+    return drizzlePg(pool, { schema });
   }
   // En Vercel el disco es de solo lectura: PGlite no sirve ahí.
   if (process.env.VERCEL || process.env.REQUIRE_DATABASE_URL === "1") {
