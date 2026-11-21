@@ -62,6 +62,16 @@ export async function processImage(path: string) {
   return { url: publicUrl(BUCKET_IMAGES, path), width: meta.width, height: meta.height, vector: featuresFromRgba256(new Uint8Array(raw)) };
 }
 
+/** Huella de una imagen por URL (absoluta o del propio sitio). Sirve para completar huellas que falten. */
+export async function featuresFromUrl(url: string, siteUrl: string) {
+  const res = await fetch(new URL(url, siteUrl), { cache: "no-store", signal: AbortSignal.timeout(10_000) });
+  if (!res.ok) throw new Error(`No se pudo leer ${url} (${res.status})`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.byteLength > MAX_IMAGE_BYTES) throw new Error("Imagen demasiado grande");
+  const raw = await sharp(buf).resize(256, 256, { fit: "fill", kernel: "linear" }).ensureAlpha().raw().toBuffer();
+  return featuresFromRgba256(new Uint8Array(raw));
+}
+
 /** Borra archivos del propio usuario en Storage (con su sesión; las políticas lo limitan a su carpeta). */
 export async function removeOwnObjects(bucket: string, paths: string[]) {
   const list = paths.filter(Boolean);

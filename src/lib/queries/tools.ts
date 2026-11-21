@@ -1,9 +1,12 @@
 import "server-only";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
+import { after } from "next/server";
 import { getDb } from "@/lib/db/client";
 import { imageFeatures, profiles, resources } from "@/lib/db/schema";
 import { cosine, FEATURE_SIZE } from "@/lib/image-features";
+import { SITE_URL } from "@/lib/site";
+import { featuresFromUrl } from "@/lib/uploads-server";
 import { CACHE_TAG } from "./resources";
 
 export type ToolPack = {
@@ -62,6 +65,13 @@ async function allVectors(): Promise<Vec[]> {
     .from(imageFeatures)
     .innerJoin(resources, and(eq(resources.id, imageFeatures.resourceId), eq(resources.status, "published")));
   const valid = rows.filter((r) => r.vector.length === FEATURE_SIZE);
+  // Si hay portadas o capturas sin huella (por ejemplo, contenido cargado a mano), se calculan
+  // en segundo plano después de responder; la próxima búsqueda ya las incluye.
+  try {
+    after(() => fillMissingFeatures(40).catch((e) => console.error("[huellas]", e)));
+  } catch {
+    /* fuera de una petición (scripts): no hace falta */
+  }
   const mean = Array.from({ length: FEATURE_SIZE }, (_, i) => (valid.length ? valid.reduce((a, r) => a + r.vector[i], 0) / valid.length : 0));
   memo = { at: Date.now(), mean, rows: valid.map((r) => ({ ...r, vector: valid.length > 4 ? center(r.vector, mean) : r.vector })) };
   return memo.rows;
@@ -120,4 +130,38 @@ export async function searchByVector(vector: number[], limit = 12): Promise<Imag
 
 export async function indexedImageCount() {
   return (await allVectors()).length;
+}
+
+let filling = false;
+
+/** Calcula las huellas que faltan de portadas y capturas de publicaciones publicadas. */
+export async function fillMissingFeatures(limit: number) {
+  if (filling) return 0;
+  filling = true;
+  try {
+    const db = await getDb();
+    const { rows } = await db.execute<{ resource_id: string; url: string; kind: string }>(sql`
+      select x.resource_id, x.url, x.kind from (
+        select r.id as resource_id, r.cover_url as url, 'cover' as kind from resources r
+          where r.status = 'published' and r.cover_url is not null
+        union all
+        select g.resource_id, g.url, 'gallery' from gallery_images g join resources r on r.id = g.resource_id and r.status = 'published'
+      ) x
+      where not exists (select 1 from image_features f where f.resource_id = x.resource_id and f.url = x.url)
+      limit ${limit}`);
+    let done = 0;
+    for (const r of rows) {
+      try {
+        const vector = await featuresFromUrl(r.url, SITE_URL);
+        await db.insert(imageFeatures).values({ resourceId: r.resource_id, url: r.url, kind: r.kind, vector });
+        done++;
+      } catch (e) {
+        console.error("[huellas]", r.url, e instanceof Error ? e.message : e);
+      }
+    }
+    if (done) memo = null;
+    return done;
+  } finally {
+    filling = false;
+  }
 }
